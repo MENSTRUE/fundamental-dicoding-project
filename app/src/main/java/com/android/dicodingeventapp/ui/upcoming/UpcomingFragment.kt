@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.android.dicodingeventapp.R
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class UpcomingFragment : Fragment() {
 
 
@@ -28,5 +29,6 @@ class UpcomingFragment : Fragment() {
 
     companion object {
 
-                }
+
             }
+    }
