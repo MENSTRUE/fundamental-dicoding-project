@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import com.android.dicodingeventapp.databinding.ActivityMainBinding
 import com.android.dicodingeventapp.ui.finish.FinishFragment
 import com.android.dicodingeventapp.ui.home.HomeFragment
+import com.android.dicodingeventapp.ui.profile.ProfileFragment
+import com.android.dicodingeventapp.ui.search.SearchFragment
 import com.android.dicodingeventapp.ui.upcoming.UpcomingFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,6 +30,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home -> loadFragment(HomeFragment())
                 R.id.navigation_upcoming -> loadFragment(UpcomingFragment())
                 R.id.navigation_finish -> loadFragment(FinishFragment())
+                R.id.navigation_profile -> loadFragment(ProfileFragment())
+                R.id.navigation_search -> loadFragment(SearchFragment())
             }
             true
         }

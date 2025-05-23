@@ -10,7 +10,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="150dp"
         android:padding="12dp">
 
         <!-- Gambar event di kiri -->
@@ -37,7 +37,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivEvent"
             app:layout_constraintTop_toTopOf="@id/ivEvent"
-            tools:text="Judul Event / Event Name" />
+            tools:text="@string/judul_event_event_name" />
 
         <!-- Kategori event -->
 

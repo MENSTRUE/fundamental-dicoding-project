@@ -9,4 +9,6 @@
     <string name="title_upcoming">Upcoming Events</string>
     <string name="nama_event">Nama Event</string>
     <string name="finished_events">Finished Events</string>
+    <string name="judul_event_event_name">Judul Event / Event Name</string>
+    <string name="profile">Profile</string>
 </resources>

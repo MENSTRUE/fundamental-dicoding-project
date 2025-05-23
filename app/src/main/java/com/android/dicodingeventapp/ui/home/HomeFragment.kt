@@ -40,6 +40,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         // done
         viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
             Log.d("HomeFragment", "Events masuk: $events")
@@ -70,7 +72,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        //progress
+        //finish
         viewModel.getFinishedEvent().observe(viewLifecycleOwner) { events ->
             Log.d("HomeFragment", "Finish Events masuk: $events")
 
@@ -78,7 +80,7 @@ class HomeFragment : Fragment() {
             events?.forEach{ event ->
                 val itemView = layoutInflater.inflate(
                     R.layout.item_finishing_event,
-                    binding.linearLayoutSlider,
+                    binding.linearLayout,
                     false
                 )
 
@@ -104,14 +106,13 @@ class HomeFragment : Fragment() {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivEvent)
 
-                binding.linearLayoutSlider.addView(itemView)
+                binding.linearLayout.addView(itemView)
 
             }
 
         }
 
     }
-
 
 
 //        viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
