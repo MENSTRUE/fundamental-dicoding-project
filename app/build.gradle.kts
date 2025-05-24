@@ -79,5 +79,8 @@ dependencies {
     implementation (libs.github.glide)
     annotationProcessor (libs.compiler)
 
+    implementation (libs.circleimageview)
+
+
 }
 
