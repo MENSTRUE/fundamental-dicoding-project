@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.profile.ProfileFragment">
 
     <!-- Header Background -->
@@ -100,19 +101,19 @@
             android:scaleType="centerCrop"
             android:contentDescription="WhatsApp"
             android:src="@drawable/whatsapp_logo"/>
+
+        <ImageButton
+            android:id="@+id/btn_linkedin"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerCrop"
+            android:contentDescription="Linkedin"
+            android:src="@drawable/linkedid_logo"/>
+
     </LinearLayout>
 
     <!-- Edit Profile Button -->
-    <Button
-        android:id="@+id/edit_profile_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Edit Profile"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

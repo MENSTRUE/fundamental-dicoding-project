@@ -14,5 +14,9 @@ data class Event(
     val registrants: Int,
     val beginTime: String,
     val endTime: String,
-    val link: String
-)
+    val link: String,
+){
+    val dateRange: String
+        get() = "$beginTime - $endTime"
+}
+

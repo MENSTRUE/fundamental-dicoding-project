@@ -18,6 +18,12 @@ class EventRepository(private val apiService: ApiService) {
     }
 
     suspend fun getEventDetail(id: Int): Event {
-        return apiService.getEventDetail(id)
+        val response = apiService.getEventDetail(id)
+        return response.event
     }
+
+    suspend fun getAllEvents(): List<Event> {
+        return apiService.getEvents(active = -1).listEvents
+    }
+
 }

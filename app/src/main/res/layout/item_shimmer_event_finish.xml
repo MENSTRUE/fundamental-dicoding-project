@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/shimmer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:layout_margin="8dp"
+    android:padding="12dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cardCornerRadius="8dp"
+        android:cardElevation="4dp"
+        android:background="@color/white"
+        android:strokeColor="@android:color/transparent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Placeholder gambar event -->
+            <View
+                android:id="@+id/shimmer_image"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Placeholder judul event -->
+            <View
+                android:id="@+id/shimmer_title"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintTop_toTopOf="@id/shimmer_image"
+                app:layout_constraintStart_toEndOf="@id/shimmer_image"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Placeholder kategori -->
+            <View
+                android:id="@+id/shimmer_category"
+                android:layout_width="80dp"
+                android:layout_height="14dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintTop_toBottomOf="@id/shimmer_title"
+                app:layout_constraintStart_toEndOf="@id/shimmer_image" />
+
+            <!-- Placeholder waktu mulai -->
+            <View
+                android:id="@+id/shimmer_begin_time"
+                android:layout_width="60dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintTop_toBottomOf="@id/shimmer_title"
+                app:layout_constraintStart_toEndOf="@id/shimmer_category" />
+
+            <!-- Placeholder waktu selesai -->
+            <View
+                android:id="@+id/shimmer_end_time"
+                android:layout_width="60dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintTop_toBottomOf="@id/shimmer_title"
+                app:layout_constraintStart_toEndOf="@id/shimmer_begin_time" />
+
+            <!-- Placeholder lokasi -->
+            <View
+                android:id="@+id/shimmer_location"
+                android:layout_width="0dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintTop_toBottomOf="@id/shimmer_category"
+                app:layout_constraintStart_toEndOf="@id/shimmer_image"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Placeholder penyelenggara -->
+            <View
+                android:id="@+id/shimmer_owner"
+                android:layout_width="0dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/shimmer_item"
+                app:layout_constraintTop_toBottomOf="@id/shimmer_location"
+                app:layout_constraintStart_toEndOf="@id/shimmer_image"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

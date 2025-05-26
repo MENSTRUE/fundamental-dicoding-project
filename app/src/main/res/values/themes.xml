@@ -1,9 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.DicodingEventApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.DicodingEventApp" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/black</item>
+        <item name="bottomNavigationStyle">@style/CustomBottomNav</item>
     </style>
 
     <style name="Theme.DicodingEventApp" parent="Base.Theme.DicodingEventApp" />
+
+    <style name="CustomBottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/bottom_nav_white</item>
+        <item name="itemTextColor">@color/bottom_nav_white</item>
+    </style>
 </resources>

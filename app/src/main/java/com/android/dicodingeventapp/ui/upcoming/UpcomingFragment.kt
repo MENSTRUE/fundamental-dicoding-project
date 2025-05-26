@@ -1,5 +1,6 @@
 package com.android.dicodingeventapp.ui.upcoming
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.android.dicodingeventapp.R
 import com.android.dicodingeventapp.databinding.FragmentUpcomingBinding
+import com.android.dicodingeventapp.ui.detail.DetailActivity
 import com.android.dicodingeventapp.ui.viewmodel.EventViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -73,9 +75,22 @@ class UpcomingFragment : Fragment() {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivEvent)
 
+                itemView.setOnClickListener {
+                    val intent = Intent(requireContext(), DetailActivity::class.java)
+                    intent.putExtra("EVENT_ID", event.id)
+                    Log.d("Adapter", "Kirim event ID: ${event.id}")
+
+
+                    startActivity(intent)
+                }
+
+
                 binding.linearLayoutUpcoming.addView(itemView)
             }
         }
+
+
+
     }
 
 

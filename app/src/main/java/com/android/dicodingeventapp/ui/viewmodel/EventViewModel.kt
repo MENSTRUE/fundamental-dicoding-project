@@ -1,5 +1,6 @@
 package com.android.dicodingeventapp.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.android.dicodingeventapp.data.repository.EventRepository
@@ -28,7 +29,14 @@ class EventViewModel @Inject constructor(
 
     fun getEventDetail(id : Int) = liveData {
         val result = eventRepository.getEventDetail(id)
+        Log.d("EventViewModel", "Detail event ID $id = $result")
         emit(result)
     }
+
+    fun getAllEvents() = liveData {
+        val result = eventRepository.getAllEvents()
+        emit(result)
+    }
+
 
 }

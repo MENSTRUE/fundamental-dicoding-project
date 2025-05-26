@@ -1,6 +1,6 @@
 package com.android.dicodingeventapp.data.api
 
-import com.android.dicodingeventapp.data.model.Event
+import com.android.dicodingeventapp.data.model.EventDetailResponse
 import com.android.dicodingeventapp.data.model.EventResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -24,5 +24,5 @@ interface ApiService {
     @GET("events/{id}")
     suspend fun getEventDetail(
         @Path("id") id: Int
-    ): Event
+    ): EventDetailResponse
 }

@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#626262</color>
     <color name="primary">#4B8ACA</color>
+    <color name="shimmer_item">#DDDDDD</color>
+
 </resources>
