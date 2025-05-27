@@ -2,7 +2,6 @@ package com.android.dicodingeventapp.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +29,14 @@ class HomeFragment : Fragment() {
 
     private val viewModel: EventViewModel by viewModels()
 
+    private fun showShimmer(container: ViewGroup, layoutRes: Int, count: Int) {
+        container.removeAllViews()
+        for (i in 1..count) {
+            val shimmerView = layoutInflater.inflate(layoutRes, container, false)
+            container.addView(shimmerView)
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,96 +49,80 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Tampilkan shimmer sebelum data masuk
+        showShimmer(binding.linearLayoutSlider, R.layout.item_shimmer_event_upcoming, 5)
+        showShimmer(binding.linearLayout, R.layout.item_shimmer_event_finish, 5)
 
-
-        // done
+        // Observe upcoming events (hanya 1 kali)
         viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
-            Log.d("HomeFragment", "Events masuk: $events")
-            events?.forEach { event ->
-                val itemView = layoutInflater.inflate(
-                    R.layout.item_upcomming_event,
-                    binding.linearLayoutSlider,
-                    false
-                )
+            binding.linearLayoutSlider.removeAllViews()
+            if (!events.isNullOrEmpty()) {
+                events.forEach { event ->
+                    val itemView = layoutInflater.inflate(R.layout.item_upcomming_event, binding.linearLayoutSlider, false)
 
-                val imageView = itemView.findViewById<ImageView>(R.id.upcomming_event)
-                val textView = itemView.findViewById<TextView>(R.id.tv_upcomming)
+                    val imageView = itemView.findViewById<ImageView>(R.id.upcomming_event)
+                    val textView = itemView.findViewById<TextView>(R.id.tv_upcomming)
 
-                textView.text = event.name
-                val imageUrl = event.imageLogo
+                    textView.text = event.name
+                    Glide.with(itemView.context)
+                        .load(event.imageLogo)
+                        .placeholder(R.drawable.placeholder_image)
+                        .error(R.drawable.eror_image)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(imageView)
 
+                    itemView.setOnClickListener {
+                        val intent = Intent(requireContext(), DetailActivity::class.java)
+                        intent.putExtra("EVENT_ID", event.id)
+                        startActivity(intent)
+                    }
 
-                Glide.with(itemView.context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.placeholder_image)
-                    .error(R.drawable.eror_image)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(imageView)
-
-                itemView.setOnClickListener {
-                    val intent = Intent(requireContext(), DetailActivity::class.java)
-                    intent.putExtra("EVENT_ID", event.id)
-                    startActivity(intent)
+                    binding.linearLayoutSlider.addView(itemView)
                 }
-
-
-
-
-                binding.linearLayoutSlider.addView(itemView)
             }
         }
 
-        //finish
+        // Observe finished events (juga hanya 1 kali)
         viewModel.getFinishedEvent().observe(viewLifecycleOwner) { events ->
-            Log.d("HomeFragment", "Finish Events masuk: $events")
+            binding.linearLayout.removeAllViews()
+            if (!events.isNullOrEmpty()) {
+                events.forEach { event ->
+                    val itemView = layoutInflater.inflate(R.layout.item_finishing_event, binding.linearLayout, false)
 
+                    val ivEvent = itemView.findViewById<ImageView>(R.id.ivEvent)
+                    val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
+                    val tvCategory = itemView.findViewById<TextView>(R.id.tv_event_category)
+                    val tvBeginTime = itemView.findViewById<TextView>(R.id.tvBeginTime)
+                    val tvEndTime = itemView.findViewById<TextView>(R.id.tvEndTime)
+                    val tvLocation = itemView.findViewById<TextView>(R.id.tvLocation)
+                    val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
 
-            events?.forEach{ event ->
-                val itemView = layoutInflater.inflate(
-                    R.layout.item_finishing_event,
-                    binding.linearLayout,
-                    false
-                )
+                    tvTitle.text = event.name
+                    tvCategory.text = event.category
+                    tvBeginTime.text = event.beginTime
+                    tvEndTime.text = event.endTime
+                    tvLocation.text = event.cityName
+                    tvOwner.text = event.ownerName
 
-                val ivEvent = itemView.findViewById<ImageView>(R.id.ivEvent)
-                val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
-                val tvCategory = itemView.findViewById<TextView>(R.id.tv_event_category)
-                val tvBeginTime = itemView.findViewById<TextView>(R.id.tvBeginTime)
-                val tvEndTime = itemView.findViewById<TextView>(R.id.tvEndTime)
-                val tvLocation = itemView.findViewById<TextView>(R.id.tvLocation)
-                val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
+                    Glide.with(itemView.context)
+                        .load(event.imageLogo)
+                        .placeholder(R.drawable.placeholder_image)
+                        .error(R.drawable.eror_image)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(ivEvent)
 
-                tvTitle.text = event.name
-                tvCategory.text = event.category
-                tvBeginTime.text = event.beginTime
-                tvEndTime.text = event.endTime
-                tvLocation.text = event.cityName
-                tvOwner.text = event.ownerName
+                    itemView.setOnClickListener {
+                        val intent = Intent(requireContext(), DetailActivity::class.java)
+                        intent.putExtra("EVENT_ID", event.id)
+                        startActivity(intent)
+                    }
 
-                Glide.with(itemView.context)
-                    .load(event.imageLogo)
-                    .placeholder(R.drawable.placeholder_image)
-                    .error(R.drawable.eror_image)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(ivEvent)
-
-                itemView.setOnClickListener {
-                    val intent = Intent(requireContext(), DetailActivity::class.java)
-                    intent.putExtra("EVENT_ID", event.id)
-                    Log.d("Adapter", "Kirim event ID: ${event.id}")
-
-
-                    startActivity(intent)
+                    binding.linearLayout.addView(itemView)
                 }
-
-
-                binding.linearLayout.addView(itemView)
-
             }
-
         }
-
     }
+
 
 
 //        viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->

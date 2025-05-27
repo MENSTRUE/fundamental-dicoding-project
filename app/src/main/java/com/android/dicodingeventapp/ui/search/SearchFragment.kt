@@ -27,6 +27,14 @@ class SearchFragment : Fragment() {
 
     private val viewModel: EventViewModel by viewModels()
 
+    private fun showShimmer(container: ViewGroup, layoutRes: Int, count: Int) {
+        container.removeAllViews()
+        for (i in 1..count) {
+            val shimmerView = layoutInflater.inflate(layoutRes, container, false)
+            container.addView(shimmerView)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,6 +45,9 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        showShimmer(binding.linearLayoutSearch, R.layout.item_shimmer_event_finish, 5)
+
 
         // Tampilkan semua event awal
         showEvents(null)
@@ -62,8 +73,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun showEvents(keyword: String?) {
-        // Clear dulu layout sebelumnya
-        binding.linearLayoutSearch.removeAllViews()
+
 
         val liveData = if (keyword.isNullOrEmpty()) {
             viewModel.getAllEvents()
@@ -73,6 +83,8 @@ class SearchFragment : Fragment() {
 
         liveData.observe(viewLifecycleOwner) { events ->
             Log.d("SearchFragment", "Events count: ${events?.size ?: 0}")
+            // Clear dulu layout sebelumnya
+            binding.linearLayoutSearch.removeAllViews()
             events?.forEach { event ->
                 val itemView = layoutInflater.inflate(
                     R.layout.item_finishing_event,

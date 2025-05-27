@@ -26,6 +26,14 @@ class UpcomingFragment : Fragment() {
 
     private val viewModel: EventViewModel by viewModels()
 
+    private fun showShimmer(container: ViewGroup, layoutRes: Int, count: Int) {
+        container.removeAllViews()
+        for (i in 1..count) {
+            val shimmerView = layoutInflater.inflate(layoutRes, container, false)
+            container.addView(shimmerView)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -44,8 +52,11 @@ class UpcomingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showShimmer(binding.linearLayoutUpcoming, R.layout.item_shimmer_event_finish, 5)
+
         viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
             Log.d("UpcomingFragment", "Events masuk: $events")
+            binding.linearLayoutUpcoming.removeAllViews()
             events?.forEach{ event ->
                 val itemView = layoutInflater.inflate(
                     R.layout.item_finishing_event,

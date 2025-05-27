@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -44,8 +45,11 @@ class DetailActivity : AppCompatActivity() {
             return
         }
 
+        binding.progressBar.visibility = View.VISIBLE // tampilkan saat loading
+
         // Observe LiveData detail event untuk update UI
         viewModel.getEventDetail(eventId).observe(this) { event: Event ->
+            binding.progressBar.visibility = View.GONE // sembunyikan saat data sudah ada
             event?.let {
                 currentEvent = it
                 binding.apply {
