@@ -56,6 +56,7 @@ class EventViewModel @Inject constructor(
 
 
     fun loadFinishedEvent() {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val result = eventRepository.getFinishedEvent()
@@ -64,12 +65,16 @@ class EventViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("EventViewModel", "Error loading finished events", e)
                 _errorMessage.value = "Gagal memuat event yang telah selesai."
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
 
+
     fun loadEventDetail(id: Int) {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val result = eventRepository.getEventDetail(id)
@@ -79,11 +84,14 @@ class EventViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("EventViewModel", "Error loading event detail", e)
                 _errorMessage.value = "Gagal memuat detail event."
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
     fun searchEvent(keyword: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val result = eventRepository.searchEvent(keyword)
@@ -92,22 +100,25 @@ class EventViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("EventViewModel", "Error searching event", e)
                 _errorMessage.value = "Gagal melakukan pencarian. Periksa koneksi internet."
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
-
     fun loadAllEvents() {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val result = eventRepository.getAllEvents()
                 _allEvents.value = result
-                _errorMessage.value = null
             } catch (e: Exception) {
                 Log.e("EventViewModel", "Error loading all events", e)
-                _errorMessage.value = "Gagal memuat semua event. Coba periksa koneksi internet."
+            } finally {
+                _isLoading.value = false
             }
         }
     }
+
 
 }

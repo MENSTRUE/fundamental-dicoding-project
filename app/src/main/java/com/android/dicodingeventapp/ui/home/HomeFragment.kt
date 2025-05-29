@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +25,8 @@ class HomeFragment : Fragment() {
     private lateinit var upcomingAdapter: UpcomingEventAdapter
     private lateinit var finishedAdapter: FinishedEventAdapter
 
+    private var dataLoaded = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,8 +40,14 @@ class HomeFragment : Fragment() {
 
         setupAdapters()
         observeViewModel()
-        viewModel.loadAllEvents() // panggil hanya sekali
+
+        if (!dataLoaded) {
+            viewModel.loadUpcomingEvent()
+            viewModel.loadFinishedEvent() // ini deklarasi
+            dataLoaded = true
+        }
     }
+
 
     private fun setupAdapters() {
         upcomingAdapter = UpcomingEventAdapter { event ->
@@ -55,7 +62,7 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        // Set shimmer
+        // Tampilkan shimmer loading awal
         upcomingAdapter.isLoading = true
         finishedAdapter.isLoading = true
 
@@ -73,24 +80,45 @@ class HomeFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
             upcomingAdapter.isLoading = false
-            upcomingAdapter.submitList(events)
+            upcomingAdapter.submitList(events ?: emptyList())
         }
 
         viewModel.finishedEvents.observe(viewLifecycleOwner) { events ->
             finishedAdapter.isLoading = false
-            finishedAdapter.submitList(events)
-        }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
+            finishedAdapter.submitList(events ?: emptyList())
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
+                upcomingAdapter.isLoading = false
+                finishedAdapter.isLoading = false
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+//    private fun observeViewModel() {
+//        viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
+//            Log.d("HomeFragment", "upcomingEvents updated: ${events?.size ?: 0} items")
+//            upcomingAdapter.isLoading = false
+//            upcomingAdapter.submitList(events ?: emptyList())
+//        }
+//
+//        viewModel.finishedEvents.observe(viewLifecycleOwner) { events ->
+//            Log.d("HomeFragment", "finishedEvents updated: ${events?.size ?: 0} items")
+//            finishedAdapter.isLoading = false
+//            finishedAdapter.submitList(events ?: emptyList())
+//        }
+//
+//        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+//            Log.d("HomeFragment", "errorMessage received: $message")  // <- ini ditaruh di sini
+//            if (!message.isNullOrEmpty()) {
+//                upcomingAdapter.isLoading = false
+//                finishedAdapter.isLoading = false
+//                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

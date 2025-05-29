@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,8 +37,10 @@ class UpcomingFragment : Fragment() {
 
         setupAdapter()
         observeUpcomingEvents()
+        observeLoadingState()
+        observeErrorMessages()
 
-        viewModel.loadUpcomingEvent()  // panggil load data tanpa observe di sini
+        viewModel.loadUpcomingEvent()
     }
 
     private fun setupAdapter() {
@@ -46,16 +49,30 @@ class UpcomingFragment : Fragment() {
             intent.putExtra("EVENT_ID", event.id)
             startActivity(intent)
         }
+
         binding.recyclerViewUpcoming.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewUpcoming.adapter = adapter
-        adapter.isLoading = true  // tampilkan loading shimmer di awal
+        adapter.isLoading = true // tampilkan shimmer di awal
         adapter.submitList(emptyList())
     }
 
     private fun observeUpcomingEvents() {
         viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
-            adapter.isLoading = false
             adapter.submitList(events)
+        }
+    }
+
+    private fun observeLoadingState() {
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            adapter.isLoading = isLoading
+        }
+    }
+
+    private fun observeErrorMessages() {
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -64,4 +81,3 @@ class UpcomingFragment : Fragment() {
         _binding = null
     }
 }
-

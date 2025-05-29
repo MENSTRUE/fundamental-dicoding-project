@@ -38,6 +38,9 @@ class SearchFragment : Fragment() {
         observeAllEvents()
         observeSearchResults()
 
+        // Load all events awalnya supaya tampil semua
+        viewModel.loadAllEvents()
+
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 handleSearchQuery(query)

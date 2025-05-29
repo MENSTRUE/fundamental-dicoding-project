@@ -36,6 +36,8 @@ class FinishFragment : Fragment() {
 
         setupAdapter()
         observeViewModel()
+
+        viewModel.loadFinishedEvent()
     }
 
     private fun setupAdapter() {
