@@ -22,11 +22,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
-
     private val viewModel: EventViewModel by viewModels()
-
     private var currentEvent: Event? = null
-
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,15 +44,17 @@ class DetailActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE // tampilkan saat loading
 
-        // Observe LiveData detail event untuk update UI
-        viewModel.getEventDetail(eventId).observe(this) { event: Event ->
-            binding.progressBar.visibility = View.GONE // sembunyikan saat data sudah ada
+        // Panggil load data
+        viewModel.loadEventDetail(eventId)
+
+        // Observe LiveData eventDetail untuk update UI
+        viewModel.eventDetail.observe(this) { event: Event? ->
+            binding.progressBar.visibility = View.GONE // sembunyikan loading saat data ada
             event?.let {
                 currentEvent = it
                 binding.apply {
-                    // Set image cover dan logo
                     Glide.with(this@DetailActivity)
-                        .load(it.mediaCover) // sesuaikan nama properti
+                        .load(it.mediaCover)
                         .placeholder(R.drawable.placeholder_image)
                         .error(R.drawable.eror_image)
                         .into(imgCover)
@@ -67,15 +66,13 @@ class DetailActivity : AppCompatActivity() {
                         .into(imgLogo)
 
                     tvEventName.text = it.name
-                    tvSummary.text = it.summary ?: "" // kalau ada summary
-                    tvDate.text =
-                        "${it.beginTime} - ${it.endTime}" // bisa disesuaikan dari properti tanggal
+                    tvSummary.text = it.summary ?: ""
+                    tvDate.text = "${it.beginTime} - ${it.endTime}"
                     tvLocation.text = it.cityName ?: ""
                     tvOrganizer.text = it.ownerName ?: ""
                     tvCategory.text = it.category ?: ""
-                    tvDescription.text =
-                        HtmlCompat.fromHtml(it.description ?: "", HtmlCompat.FROM_HTML_MODE_LEGACY)
-
+                    tvDescription.text = HtmlCompat.fromHtml(it.description ?: "", HtmlCompat.FROM_HTML_MODE_LEGACY)
+                    tvQuota.text = it.quota.toString()
                 }
             }
         }
@@ -89,6 +86,5 @@ class DetailActivity : AppCompatActivity() {
                 Toast.makeText(this, "Link pendaftaran tidak tersedia", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 }

@@ -2,20 +2,15 @@ package com.android.dicodingeventapp.ui.upcoming
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.android.dicodingeventapp.R
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.dicodingeventapp.databinding.FragmentUpcomingBinding
 import com.android.dicodingeventapp.ui.detail.DetailActivity
 import com.android.dicodingeventapp.ui.viewmodel.EventViewModel
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,83 +21,47 @@ class UpcomingFragment : Fragment() {
 
     private val viewModel: EventViewModel by viewModels()
 
-    private fun showShimmer(container: ViewGroup, layoutRes: Int, count: Int) {
-        container.removeAllViews()
-        for (i in 1..count) {
-            val shimmerView = layoutInflater.inflate(layoutRes, container, false)
-            container.addView(shimmerView)
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
-    }
+    private lateinit var adapter: UpcomingEventAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
-        return  binding.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showShimmer(binding.linearLayoutUpcoming, R.layout.item_shimmer_event_finish, 5)
+        setupAdapter()
+        observeUpcomingEvents()
 
-        viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
-            Log.d("UpcomingFragment", "Events masuk: $events")
-            binding.linearLayoutUpcoming.removeAllViews()
-            events?.forEach{ event ->
-                val itemView = layoutInflater.inflate(
-                    R.layout.item_finishing_event,
-                    binding.linearLayoutUpcoming,
-                    false
-                )
+        viewModel.loadUpcomingEvent()  // panggil load data tanpa observe di sini
+    }
 
-                val ivEvent = itemView.findViewById<ImageView>(R.id.ivEvent)
-                val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
-                val tvCategory = itemView.findViewById<TextView>(R.id.tv_event_category)
-                val tvBeginTime = itemView.findViewById<TextView>(R.id.tvBeginTime)
-                val tvEndTime = itemView.findViewById<TextView>(R.id.tvEndTime)
-                val tvLocation = itemView.findViewById<TextView>(R.id.tvLocation)
-                val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
-
-                tvTitle.text = event.name
-                tvCategory.text = event.category
-                tvBeginTime.text = event.beginTime
-                tvEndTime.text = event.endTime
-                tvLocation.text = event.cityName
-                tvOwner.text = event.ownerName
-
-                Glide.with(itemView.context)
-                    .load(event.imageLogo)
-                    .placeholder(R.drawable.placeholder_image)
-                    .error(R.drawable.eror_image)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(ivEvent)
-
-                itemView.setOnClickListener {
-                    val intent = Intent(requireContext(), DetailActivity::class.java)
-                    intent.putExtra("EVENT_ID", event.id)
-                    Log.d("Adapter", "Kirim event ID: ${event.id}")
-
-
-                    startActivity(intent)
-                }
-
-
-                binding.linearLayoutUpcoming.addView(itemView)
-            }
+    private fun setupAdapter() {
+        adapter = UpcomingEventAdapter { event ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", event.id)
+            startActivity(intent)
         }
-
-
-
+        binding.recyclerViewUpcoming.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewUpcoming.adapter = adapter
+        adapter.isLoading = true  // tampilkan loading shimmer di awal
+        adapter.submitList(emptyList())
     }
 
-
+    private fun observeUpcomingEvents() {
+        viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
+            adapter.isLoading = false
+            adapter.submitList(events)
+        }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
+

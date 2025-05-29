@@ -5,16 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.android.dicodingeventapp.R
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.dicodingeventapp.databinding.FragmentHomeBinding
 import com.android.dicodingeventapp.ui.detail.DetailActivity
 import com.android.dicodingeventapp.ui.viewmodel.EventViewModel
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,20 +21,10 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    // deklarasi disini dulu
-//    @Inject
-//    lateinit var viewModel: EventViewModel
-
     private val viewModel: EventViewModel by viewModels()
 
-    private fun showShimmer(container: ViewGroup, layoutRes: Int, count: Int) {
-        container.removeAllViews()
-        for (i in 1..count) {
-            val shimmerView = layoutInflater.inflate(layoutRes, container, false)
-            container.addView(shimmerView)
-        }
-    }
-
+    private lateinit var upcomingAdapter: UpcomingEventAdapter
+    private lateinit var finishedAdapter: FinishedEventAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,96 +37,63 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Tampilkan shimmer sebelum data masuk
-        showShimmer(binding.linearLayoutSlider, R.layout.item_shimmer_event_upcoming, 5)
-        showShimmer(binding.linearLayout, R.layout.item_shimmer_event_finish, 5)
+        setupAdapters()
+        observeViewModel()
+        viewModel.loadAllEvents() // panggil hanya sekali
+    }
 
-        // Observe upcoming events (hanya 1 kali)
-        viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
-            binding.linearLayoutSlider.removeAllViews()
-            if (!events.isNullOrEmpty()) {
-                events.forEach { event ->
-                    val itemView = layoutInflater.inflate(R.layout.item_upcomming_event, binding.linearLayoutSlider, false)
-
-                    val imageView = itemView.findViewById<ImageView>(R.id.upcomming_event)
-                    val textView = itemView.findViewById<TextView>(R.id.tv_upcomming)
-
-                    textView.text = event.name
-                    Glide.with(itemView.context)
-                        .load(event.imageLogo)
-                        .placeholder(R.drawable.placeholder_image)
-                        .error(R.drawable.eror_image)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(imageView)
-
-                    itemView.setOnClickListener {
-                        val intent = Intent(requireContext(), DetailActivity::class.java)
-                        intent.putExtra("EVENT_ID", event.id)
-                        startActivity(intent)
-                    }
-
-                    binding.linearLayoutSlider.addView(itemView)
-                }
-            }
+    private fun setupAdapters() {
+        upcomingAdapter = UpcomingEventAdapter { event ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", event.id)
+            startActivity(intent)
         }
 
-        // Observe finished events (juga hanya 1 kali)
-        viewModel.getFinishedEvent().observe(viewLifecycleOwner) { events ->
-            binding.linearLayout.removeAllViews()
-            if (!events.isNullOrEmpty()) {
-                events.forEach { event ->
-                    val itemView = layoutInflater.inflate(R.layout.item_finishing_event, binding.linearLayout, false)
+        finishedAdapter = FinishedEventAdapter { event ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra("EVENT_ID", event.id)
+            startActivity(intent)
+        }
 
-                    val ivEvent = itemView.findViewById<ImageView>(R.id.ivEvent)
-                    val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
-                    val tvCategory = itemView.findViewById<TextView>(R.id.tv_event_category)
-                    val tvBeginTime = itemView.findViewById<TextView>(R.id.tvBeginTime)
-                    val tvEndTime = itemView.findViewById<TextView>(R.id.tvEndTime)
-                    val tvLocation = itemView.findViewById<TextView>(R.id.tvLocation)
-                    val tvOwner = itemView.findViewById<TextView>(R.id.tvOwner)
+        // Set shimmer
+        upcomingAdapter.isLoading = true
+        finishedAdapter.isLoading = true
 
-                    tvTitle.text = event.name
-                    tvCategory.text = event.category
-                    tvBeginTime.text = event.beginTime
-                    tvEndTime.text = event.endTime
-                    tvLocation.text = event.cityName
-                    tvOwner.text = event.ownerName
+        binding.recyclerViewSlider.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = upcomingAdapter
+        }
 
-                    Glide.with(itemView.context)
-                        .load(event.imageLogo)
-                        .placeholder(R.drawable.placeholder_image)
-                        .error(R.drawable.eror_image)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(ivEvent)
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = finishedAdapter
+        }
+    }
 
-                    itemView.setOnClickListener {
-                        val intent = Intent(requireContext(), DetailActivity::class.java)
-                        intent.putExtra("EVENT_ID", event.id)
-                        startActivity(intent)
-                    }
+    private fun observeViewModel() {
+        viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
+            upcomingAdapter.isLoading = false
+            upcomingAdapter.submitList(events)
+        }
 
-                    binding.linearLayout.addView(itemView)
-                }
+        viewModel.finishedEvents.observe(viewLifecycleOwner) { events ->
+            finishedAdapter.isLoading = false
+            finishedAdapter.submitList(events)
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isVisible = isLoading
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-
-
-//        viewModel.getUpcomingEvent().observe(viewLifecycleOwner) { events ->
-//            Log.d("HomeFragment", "Events masuk: $events")
-//            if (events.isNullOrEmpty()) {
-//                Log.d("HomeFragment", "Tidak ada event yang diterima")
-//            } else {
-//                events.forEach { event ->
-//                    Log.d("HomeFragment", "Event: ${event.name}")
-//                }
-//            }
-//        }
-
-
-        override fun onDestroyView() {
-            super.onDestroyView()
-            _binding = null
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
+}

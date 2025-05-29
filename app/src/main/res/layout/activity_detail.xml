@@ -144,6 +144,23 @@
                 android:textColor="@android:color/black"
                 android:layout_marginBottom="12dp" />
 
+            <!-- Quota -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Quota:"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+            <TextView
+                android:id="@+id/tvQuota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="12dp" />
+
+
             <!-- Title: Description -->
             <TextView
                 android:id="@+id/tvDescriptionTitle"
@@ -163,7 +180,10 @@
                 android:textSize="14sp"
                 android:textColor="@android:color/black"
                 android:layout_marginBottom="16dp" />
+
         </LinearLayout>
+
+
     </androidx.core.widget.NestedScrollView>
 
     <!-- Register Button -->
