@@ -65,6 +65,8 @@ class DetailActivity : AppCompatActivity() {
                         .error(R.drawable.eror_image)
                         .into(imgLogo)
 
+                    val remainingQuota = it.quota - it.registrants
+
                     tvEventName.text = it.name
                     tvSummary.text = it.summary ?: ""
                     tvDate.text = "${it.beginTime} - ${it.endTime}"
@@ -72,7 +74,7 @@ class DetailActivity : AppCompatActivity() {
                     tvOrganizer.text = it.ownerName ?: ""
                     tvCategory.text = it.category ?: ""
                     tvDescription.text = HtmlCompat.fromHtml(it.description ?: "", HtmlCompat.FROM_HTML_MODE_LEGACY)
-                    tvQuota.text = it.quota.toString()
+                    tvQuota.text = remainingQuota.toString()
                 }
             }
         }
