@@ -11,4 +11,5 @@
     <string name="finished_events">Finished Events</string>
     <string name="judul_event_event_name">Judul Event / Event Name</string>
     <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
 </resources>

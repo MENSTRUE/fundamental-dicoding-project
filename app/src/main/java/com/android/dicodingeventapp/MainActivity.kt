@@ -1,6 +1,8 @@
 package com.android.dicodingeventapp
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.android.dicodingeventapp.databinding.ActivityMainBinding
@@ -21,30 +23,45 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // default fragment
-        loadFragment(HomeFragment())
+        setSupportActionBar(binding.toolbar)
 
-        // deklarasi fragment
-        binding.bottomNavigation.setOnItemSelectedListener{
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment(), "Dicoding Event App") // hanya kalau pertama kali, bukan recreate
+        }
+
+        binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.navigation_home -> loadFragment(HomeFragment())
-                R.id.navigation_upcoming -> loadFragment(UpcomingFragment())
-                R.id.navigation_finish -> loadFragment(FinishFragment())
-                R.id.navigation_profile -> loadFragment(ProfileFragment())
-                R.id.navigation_search -> loadFragment(SearchFragment())
+                R.id.navigation_home -> loadFragment(HomeFragment(), "Dicoding Event App")
+                R.id.navigation_upcoming -> loadFragment(UpcomingFragment(), "Upcoming")
+                R.id.navigation_finish -> loadFragment(FinishFragment(), "Finish")
+                R.id.navigation_profile -> loadFragment(ProfileFragment(), "Profile")
+                R.id.navigation_search -> loadFragment(SearchFragment(), "Search")
             }
             true
         }
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_settings, menu) // sesuaikan nama file menu xml-mu
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.navigation_settings -> {
+                // aksi saat menu settings di klik
+                // misalnya buka activity pengaturan:
+                // startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
+    }
 
-    // load fragment
-    private fun loadFragment(fragment: Fragment) {
+    private fun loadFragment(fragment: Fragment, title: String) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container_fragment, fragment)
             .commit()
+        supportActionBar?.title = title
     }
-
-    }
-
-
+}

@@ -83,6 +83,9 @@ dependencies {
 
     implementation (libs.shimmer)
 
+    // teori unit test
+    testImplementation (libs.junit)
+
 
 
 }

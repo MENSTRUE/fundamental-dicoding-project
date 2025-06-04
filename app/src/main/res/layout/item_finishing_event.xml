@@ -8,13 +8,13 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
     app:strokeColor="@android:color/transparent"
-    android:background="@color/white">
+    android:background="?attr/colorSurface">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:padding="12dp"
-        android:background="@color/white">
+        android:background="?attr/colorSurface">
 
         <!-- Gambar event di kiri -->
         <ImageView

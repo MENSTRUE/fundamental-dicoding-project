@@ -3,8 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#626262</color>
-    <color name="primary">#0D47A1</color> <!-- biru dongker -->
-    <color name="onPrimary">#FFFFFFFF</color> <!-- teks/icon di atas primary -->
+    <color name="primary">#CEE2FA</color>   <!-- biru muda keputihan -->
+    <color name="onPrimary">#FF000000</color> <!-- teks/icon gelap di atas primary -->
     <color name="shimmer_item">#DDDDDD</color>
 
 </resources>

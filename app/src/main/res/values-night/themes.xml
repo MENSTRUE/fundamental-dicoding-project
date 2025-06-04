@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.DicodingEventApp" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSurface">@color/black</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="bottomNavigationStyle">@style/CustomBottomNav.Dark</item>
+        <item name="toolbarStyle">@style/CustomToolbar</item>
+        <item name="colorControlNormal">@color/black</item> <!-- warna ikon toolbar/menu -->
+    </style>
+
+    <style name="Theme.DicodingEventApp" parent="Base.Theme.DicodingEventApp" />
+
+    <style name="CustomBottomNav.Dark" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/white</item>
+        <item name="itemTextColor">@color/white</item>
+    </style>
+    <style name="CustomToolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextColor">@color/black</item> <!-- Atur warna teks judul -->
+        <item name="subtitleTextColor">@color/black</item> <!-- Kalau ada subtitle -->
+    </style>
+</resources>

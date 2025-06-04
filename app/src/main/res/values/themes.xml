@@ -1,14 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.DicodingEventApp" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/black</item>
-        <item name="bottomNavigationStyle">@style/CustomBottomNav</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="bottomNavigationStyle">@style/CustomBottomNav.Light</item>
+        <item name="toolbarStyle">@style/CustomToolbar</item>
+        <item name="colorControlNormal">@color/white</item> <!-- warna ikon toolbar/menu -->
     </style>
 
     <style name="Theme.DicodingEventApp" parent="Base.Theme.DicodingEventApp" />
 
-    <style name="CustomBottomNav" parent="Widget.Material3.BottomNavigationView">
-        <item name="itemIconTint">@color/bottom_nav_white</item>
-        <item name="itemTextColor">@color/bottom_nav_white</item>
+    <style name="CustomBottomNav.Light" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/black</item>
+        <item name="itemTextColor">@color/black</item>
     </style>
+    <style name="CustomToolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextColor">@color/white</item> <!-- Atur warna teks judul -->
+        <item name="subtitleTextColor">@color/white</item> <!-- Kalau ada subtitle -->
+    </style>
+
 </resources>
