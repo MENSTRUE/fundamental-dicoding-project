@@ -1,5 +1,6 @@
 package com.android.dicodingeventapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,6 +11,7 @@ import com.android.dicodingeventapp.ui.finish.FinishFragment
 import com.android.dicodingeventapp.ui.home.HomeFragment
 import com.android.dicodingeventapp.ui.profile.ProfileFragment
 import com.android.dicodingeventapp.ui.search.SearchFragment
+import com.android.dicodingeventapp.ui.settings.SettingsActivity
 import com.android.dicodingeventapp.ui.upcoming.UpcomingFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,9 +51,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.navigation_settings -> {
-                // aksi saat menu settings di klik
-                // misalnya buka activity pengaturan:
-                // startActivity(Intent(this, SettingsActivity::class.java))
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

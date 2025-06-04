@@ -66,6 +66,8 @@ dependencies {
 
     // Dependency Injection (Hilt)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.datastore.preferences.core.android)
     kapt(libs.hilt.android.compiler)
 
     // Testing
@@ -85,6 +87,14 @@ dependencies {
 
     // teori unit test
     testImplementation (libs.junit)
+
+    implementation (libs.material.v1110)
+
+    // WorkManager - KTX (Kotlin Extensions)
+    implementation (libs.androidx.work.runtime.ktx)
+
+    implementation (libs.androidx.datastore.preferences)
+
 
 
 
