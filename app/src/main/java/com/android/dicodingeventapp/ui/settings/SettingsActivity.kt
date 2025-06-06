@@ -9,7 +9,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.android.dicodingeventapp.databinding.ActivitySettingsBinding
 import com.android.dicodingeventapp.utils.SettingPreferences
-import com.android.dicodingeventapp.utils.dataStore
+import com.android.dicodingeventapp.utils.dataStore // Import yang diperlukan untuk properti ekstensi Context.dataStore
 import com.android.dicodingeventapp.worker.ReminderWorker
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -25,29 +25,34 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.title = "Settings"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        // Asumsi ini akan di-inject oleh Hilt di versi final,
-        // namun jika belum sepenuhnya terintegrasi, ini bisa jadi placeholder.
-        // Jika Hilt sudah terintegrasi, Anda bisa menggunakan @Inject lateinit var preferences: SettingPreferences
-        // dan menghapus baris inisialisasi manual ini.
-        preferences =
-            com.android.dicodingeventapp.utils.SettingPreferences(applicationContext.dataStore) // PERBAIKAN: Gunakan constructor SettingPreferences yang baru
-
-        // Observe current theme
-        lifecycleScope.launch {
-            val isDark = preferences.isDarkTheme().first()
-            binding.switchTheme.isChecked = isDark
-            applyTheme(isDark)
+        // Handle tombol back di toolbar
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
 
-        // Handle toggle theme
-        binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            lifecycleScope.launch {
-                preferences.setDarkTheme(isChecked)
-                applyTheme(isChecked)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Inisialisasi SettingPreferences menggunakan properti ekstensi dataStore
+        preferences = SettingPreferences(applicationContext.dataStore)
+
+        // Observe current theme dan set listener dengan aman untuk menghindari looping
+        lifecycleScope.launch {
+            val isDark = preferences.isDarkTheme().first()
+
+            // 1. Nonaktifkan listener sementara sebelum mengatur status switch secara programatis.
+            binding.switchTheme.setOnCheckedChangeListener(null)
+            // 2. Atur status switch berdasarkan preferensi yang tersimpan.
+            binding.switchTheme.isChecked = isDark
+            // 3. Aktifkan kembali listener setelah status diatur.
+            binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
+                lifecycleScope.launch {
+                    preferences.setDarkTheme(isChecked)
+                    applyTheme(isChecked)
+                }
             }
+            // 4. Terapkan tema awal saat Activity pertama kali dibuat/dimulai.
+            applyTheme(isDark)
         }
 
         // Observe reminder
@@ -79,7 +84,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun handleReminder(isActive: Boolean) {
         val workManager = WorkManager.getInstance(this)
-        // PERBAIKAN: Ubah 1 menjadi 1L
+        // PERBAIKAN: Ubah 1 menjadi 1L agar sesuai dengan tipe Long
         val request = PeriodicWorkRequestBuilder<ReminderWorker>(1L, TimeUnit.DAYS).build()
         if (isActive) {
             workManager.enqueueUniquePeriodicWork(

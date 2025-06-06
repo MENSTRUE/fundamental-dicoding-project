@@ -16,6 +16,7 @@ constraintlayout = "2.2.1"
 materialVersion = "1.11.0"
 navigationFragmentKtx = "2.9.0"
 navigationUiKtx = "2.9.0"
+roomRuntime = "2.6.1"
 shimmer = "0.5.0"
 squareupRetrofit = "2.9.0"
 workRuntimeKtx = "2.10.1"
@@ -27,6 +28,9 @@ datastorePreferencesCoreAndroid = "1.1.7"
 android-async-http = { module = "com.loopj.android:android-async-http", version.ref = "androidAsyncHttp" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }

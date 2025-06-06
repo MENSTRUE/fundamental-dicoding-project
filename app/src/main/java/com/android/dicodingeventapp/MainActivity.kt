@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.android.dicodingeventapp.databinding.ActivityMainBinding
+import com.android.dicodingeventapp.ui.favorite.FavoriteActivity
 import com.android.dicodingeventapp.ui.finish.FinishFragment
 import com.android.dicodingeventapp.ui.home.HomeFragment
 import com.android.dicodingeventapp.ui.profile.ProfileFragment
@@ -52,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.navigation_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.navigation_favorite -> { // Menambahkan navigasi untuk FavoriteActivity di menu toolbar
+                val intent = Intent(this, FavoriteActivity::class.java)
                 startActivity(intent)
                 true
             }

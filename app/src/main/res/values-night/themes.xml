@@ -19,4 +19,5 @@
         <item name="titleTextColor">@color/black</item> <!-- Atur warna teks judul -->
         <item name="subtitleTextColor">@color/black</item> <!-- Kalau ada subtitle -->
     </style>
+
 </resources>

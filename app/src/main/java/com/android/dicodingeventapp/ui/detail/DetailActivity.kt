@@ -11,12 +11,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.android.dicodingeventapp.R
+import com.android.dicodingeventapp.data.local.database.AppDatabase
+import com.android.dicodingeventapp.data.local.entity.FavoriteEventEntity
 import com.android.dicodingeventapp.data.model.Event
 import com.android.dicodingeventapp.databinding.ActivityDetailBinding
+import com.android.dicodingeventapp.repository.FavoriteRepository
 import com.android.dicodingeventapp.ui.viewmodel.EventViewModel
+import com.android.dicodingeventapp.viewmodel.FavoriteViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
@@ -24,6 +31,9 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
     private val viewModel: EventViewModel by viewModels()
     private var currentEvent: Event? = null
+
+    private lateinit var favoriteViewModel: FavoriteViewModel
+    private var isEventCurrentlyFavorite: Boolean = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,23 +45,36 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         val eventId = intent.getIntExtra("EVENT_ID", -1)
+
+        val db = AppDatabase.getInstance(applicationContext)
+        val favoriteRepository = FavoriteRepository(db.favoriteDao())
+        favoriteViewModel = ViewModelProvider(this, FavoriteViewModel.Factory(favoriteRepository))
+            .get(FavoriteViewModel::class.java)
+
         if (eventId == -1) {
             Log.e("DetailActivity", "Event ID tidak ditemukan!")
+            Toast.makeText(this, "Informasi event tidak tersedia.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        binding.progressBar.visibility = View.VISIBLE // tampilkan saat loading
+        binding.progressBar.visibility = View.VISIBLE
 
-        // Panggil load data
         viewModel.loadEventDetail(eventId)
 
-        // Observe LiveData eventDetail untuk update UI
         viewModel.eventDetail.observe(this) { event: Event? ->
-            binding.progressBar.visibility = View.GONE // sembunyikan loading saat data ada
+            binding.progressBar.visibility = View.GONE
             event?.let {
                 currentEvent = it
+                Log.d("DetailActivity", "Event detail loaded: ${it.name}")
+
                 binding.apply {
                     Glide.with(this@DetailActivity)
                         .load(it.mediaCover)
@@ -76,6 +99,14 @@ class DetailActivity : AppCompatActivity() {
                     tvDescription.text = HtmlCompat.fromHtml(it.description ?: "", HtmlCompat.FROM_HTML_MODE_LEGACY)
                     tvQuota.text = remainingQuota.toString()
                 }
+
+                // Panggil fungsi ini untuk memeriksa status favorit awal
+                checkFavoriteStatus(it.id)
+
+            } ?: run {
+                Log.e("DetailActivity", "Event with ID $eventId not found or failed to load.")
+                Toast.makeText(this, "Gagal memuat detail event.", Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
 
@@ -87,6 +118,75 @@ class DetailActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Link pendaftaran tidak tersedia", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.imageButtonFavorite.setOnClickListener {
+            currentEvent?.let { event ->
+                val favoriteEvent = FavoriteEventEntity(
+                    id = event.id,
+                    title = event.name,
+                    description = event.description ?: "",
+                    startDate = "${event.beginTime} - ${event.endTime}",
+                    location = event.cityName ?: "",
+                    imageUrl = event.mediaCover ?: "",
+                    logoUrl = event.imageLogo ?: ""
+                )
+
+                lifecycleScope.launch {
+                    try {
+                        if (isEventCurrentlyFavorite) {
+                            favoriteViewModel.removeFavorite(favoriteEvent)
+                            // PERBAIKAN: Perbarui state dan UI ikon secara langsung
+                            isEventCurrentlyFavorite = false
+                            updateFavoriteButtonIcon(isEventCurrentlyFavorite)
+                            Toast.makeText(this@DetailActivity, "Dihapus dari favorit", Toast.LENGTH_SHORT).show()
+                            Log.d("DetailActivity", "Event dihapus dari favorit: ${event.name}")
+                        } else {
+                            favoriteViewModel.addFavorite(favoriteEvent)
+                            // PERBAIKAN: Perbarui state dan UI ikon secara langsung
+                            isEventCurrentlyFavorite = true
+                            updateFavoriteButtonIcon(isEventCurrentlyFavorite)
+                            Toast.makeText(this@DetailActivity, "Ditambahkan ke favorit", Toast.LENGTH_SHORT).show()
+                            Log.d("DetailActivity", "Event ditambahkan ke favorit: ${event.name}")
+                        }
+                        // Memanggil checkFavoriteStatus lagi untuk memastikan sinkronisasi akhir dengan DB
+                        // Ini penting jika ada kasus edge di mana operasi DB tidak sesuai harapan
+                        checkFavoriteStatus(event.id)
+                    } catch (e: Exception) {
+                        Log.e("DetailActivity", "Error during favorite toggle: ${e.message}", e)
+                        Toast.makeText(this@DetailActivity, "Gagal mengubah status favorit.", Toast.LENGTH_SHORT).show()
+                        // Jika ada error, coba periksa kembali status dari DB untuk menampilkan ikon yang akurat
+                        checkFavoriteStatus(event.id)
+                    }
+                }
+            } ?: run {
+                Toast.makeText(this, "Data event belum sepenuhnya dimuat.", Toast.LENGTH_SHORT).show()
+                Log.w("DetailActivity", "Attempted to toggle favorite but currentEvent is null.")
+            }
+        }
+    }
+
+    private fun checkFavoriteStatus(eventId: Int) {
+        lifecycleScope.launch {
+            Log.d("DetailActivity", "Memeriksa status favorit untuk event ID: $eventId")
+            try {
+                val isCurrentlyFavoriteInDb = favoriteViewModel.isFavorite(eventId)
+                isEventCurrentlyFavorite = isCurrentlyFavoriteInDb // Perbarui state boolean
+                updateFavoriteButtonIcon(isCurrentlyFavoriteInDb) // Perbarui UI ikon
+                Log.d("DetailActivity", "Status favorit untuk event ID $eventId: $isEventCurrentlyFavorite")
+            } catch (e: Exception) {
+                Log.e("DetailActivity", "Error checking favorite status: ${e.message}", e)
+                Toast.makeText(this@DetailActivity, "Gagal memeriksa status favorit.", Toast.LENGTH_SHORT).show()
+                updateFavoriteButtonIcon(false) // Atur ikon ke status default jika ada error
+            }
+        }
+    }
+
+    private fun updateFavoriteButtonIcon(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.imageButtonFavorite.setImageResource(R.drawable.ic_favorite_filled)
+        } else {
+            binding.imageButtonFavorite.setImageResource(R.drawable.ic_favorite_not_filled)
         }
     }
 }

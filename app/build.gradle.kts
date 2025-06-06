@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.core.android)
     implementation(libs.androidx.datastore.preferences.core.android)
+    implementation(libs.androidx.espresso.core)
     kapt(libs.hilt.android.compiler)
 
     // Testing
@@ -95,6 +96,10 @@ dependencies {
 
     implementation (libs.androidx.datastore.preferences)
 
+    // Room
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx) // opsional untuk coroutine dan LiveData support
 
 
 
