@@ -33,6 +33,8 @@ class DetailActivity : AppCompatActivity() {
     private var currentEvent: Event? = null
 
     private lateinit var favoriteViewModel: FavoriteViewModel
+    // Variabel ini akan diupdate setiap kali checkFavoriteStatus dipanggil,
+    // atau setelah operasi add/remove favorit berhasil.
     private var isEventCurrentlyFavorite: Boolean = false
 
     @SuppressLint("SetTextI18n")
@@ -134,28 +136,35 @@ class DetailActivity : AppCompatActivity() {
 
                 lifecycleScope.launch {
                     try {
-                        if (isEventCurrentlyFavorite) {
+                        // PENTING: Periksa status favorit TERBARU dari database
+                        val isCurrentlyFavoriteInDbAtClick = favoriteViewModel.isFavorite(event.id)
+                        Log.d("DetailActivity", "Status favorit sebelum klik: $isCurrentlyFavoriteInDbAtClick")
+
+                        if (isCurrentlyFavoriteInDbAtClick) {
                             favoriteViewModel.removeFavorite(favoriteEvent)
-                            // PERBAIKAN: Perbarui state dan UI ikon secara langsung
+                            // Update state dan UI ikon secara langsung SETELAH operasi berhasil
                             isEventCurrentlyFavorite = false
                             updateFavoriteButtonIcon(isEventCurrentlyFavorite)
                             Toast.makeText(this@DetailActivity, "Dihapus dari favorit", Toast.LENGTH_SHORT).show()
                             Log.d("DetailActivity", "Event dihapus dari favorit: ${event.name}")
                         } else {
                             favoriteViewModel.addFavorite(favoriteEvent)
-                            // PERBAIKAN: Perbarui state dan UI ikon secara langsung
+                            // Update state dan UI ikon secara langsung SETELAH operasi berhasil
                             isEventCurrentlyFavorite = true
                             updateFavoriteButtonIcon(isEventCurrentlyFavorite)
                             Toast.makeText(this@DetailActivity, "Ditambahkan ke favorit", Toast.LENGTH_SHORT).show()
                             Log.d("DetailActivity", "Event ditambahkan ke favorit: ${event.name}")
                         }
-                        // Memanggil checkFavoriteStatus lagi untuk memastikan sinkronisasi akhir dengan DB
-                        // Ini penting jika ada kasus edge di mana operasi DB tidak sesuai harapan
-                        checkFavoriteStatus(event.id)
+                        // Panggilan ini sekarang lebih berfungsi sebagai validasi akhir/sinkronisasi
+                        // atau untuk menangani kasus yang sangat jarang terjadi
+                        // checkFavoriteStatus(event.id) // Bisa dihapus atau tetap ada, tergantung kebutuhan
+                        // untuk jaminan sinkronisasi ekstra.
+                        // Untuk respon cepat, kita sudah update di atas.
+
                     } catch (e: Exception) {
                         Log.e("DetailActivity", "Error during favorite toggle: ${e.message}", e)
                         Toast.makeText(this@DetailActivity, "Gagal mengubah status favorit.", Toast.LENGTH_SHORT).show()
-                        // Jika ada error, coba periksa kembali status dari DB untuk menampilkan ikon yang akurat
+                        // Jika ada error, periksa kembali status dari DB untuk menampilkan ikon yang akurat
                         checkFavoriteStatus(event.id)
                     }
                 }

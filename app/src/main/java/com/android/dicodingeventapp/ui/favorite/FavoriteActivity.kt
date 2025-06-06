@@ -1,6 +1,6 @@
 package com.android.dicodingeventapp.ui.favorite
 
-import android.content.Intent // Import Intent
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.dicodingeventapp.data.local.database.AppDatabase
 import com.android.dicodingeventapp.databinding.ActivityFavoriteBinding
 import com.android.dicodingeventapp.repository.FavoriteRepository
-import com.android.dicodingeventapp.ui.detail.DetailActivity // Import DetailActivity
+import com.android.dicodingeventapp.ui.detail.DetailActivity
 import com.android.dicodingeventapp.viewmodel.FavoriteViewModel
 
 class FavoriteActivity : AppCompatActivity() {
@@ -28,6 +28,15 @@ class FavoriteActivity : AppCompatActivity() {
         binding = ActivityFavoriteBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Asumsikan 'activity_favorite.xml' memiliki Toolbar dengan ID 'toolbar'.
+        setSupportActionBar(binding.toolbar)
+        // Mengaktifkan tombol "Up" (panah kembali) di Toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // Menetapkan listener untuk tombol "Up" agar kembali ke Activity sebelumnya
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed() // Kembali ke Activity sebelumnya
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -40,13 +49,9 @@ class FavoriteActivity : AppCompatActivity() {
         favoriteViewModel = ViewModelProvider(this, FavoriteViewModel.Factory(repository))
             .get(FavoriteViewModel::class.java)
 
-        // MEMPERBAIKI: Implementasi logika klik item untuk navigasi ke DetailActivity
         favoriteAdapter = FavoriteAdapter { event ->
-            // Membuat Intent untuk membuka DetailActivity
             val intent = Intent(this, DetailActivity::class.java)
-            // Menambahkan ID event sebagai extra ke Intent
             intent.putExtra("EVENT_ID", event.id)
-            // Memulai DetailActivity
             startActivity(intent)
         }
         binding.rvFavorites.layoutManager = LinearLayoutManager(this)
@@ -54,9 +59,8 @@ class FavoriteActivity : AppCompatActivity() {
 
         favoriteViewModel.favorites.observe(this) { favorites ->
             favoriteAdapter.submitList(favorites)
-            // Logika untuk menampilkan/menyembunyikan pesan "Tidak ada favorit"
             if (favorites.isEmpty()) {
-                binding.tvNoFavorites.visibility = View.VISIBLE // Asumsikan tvNoFavorites exists
+                binding.tvNoFavorites.visibility = View.VISIBLE
                 binding.rvFavorites.visibility = View.GONE
             } else {
                 binding.tvNoFavorites.visibility = View.GONE
