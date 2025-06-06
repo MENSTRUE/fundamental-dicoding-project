@@ -5,15 +5,18 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface" tools:context=".ui.favorite.FavoriteActivity">
+    android:background="?attr/colorSurface"
+    tools:context=".ui.favorite.FavoriteActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:title="Favorite Events" app:titleTextColor="?attr/colorOnPrimary"
-        app:navigationIcon="@drawable/ic_back" app:navigationIconTint="?attr/colorOnPrimary"
+        app:title="Favorite Events"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -24,10 +27,12 @@
         android:layout_height="0dp"
         android:padding="8dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_finishing_event" tools:itemCount="5" />
+        tools:listitem="@layout/item_finishing_event"
+        tools:itemCount="5" />
 
     <TextView
         android:id="@+id/tvNoFavorites"
@@ -37,7 +42,8 @@
         android:textSize="18sp"
         android:textColor="?attr/colorOnSurface"
         android:gravity="center"
-        android:visibility="gone" app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
